@@ -61,9 +61,21 @@ try {
     $userModel = new UserModel($pdo);
     $user = $userModel->findByEmailHash($profile['email']);
 
+    $state = $_GET['state'] ?? '';
+    $attemptedRole = str_starts_with($state, 'admin_') ? 'admin' : 'user';
+
     if (!$user) {
-        // Email tidak terdaftar → arahkan untuk hubungi administrator
-        $_SESSION['login_error'] = 'Email <strong>' . htmlspecialchars($profile['email']) . '</strong> belum terdaftar. Silakan hubungi Administrator untuk mendaftarkan akun Anda.';
+        if ($attemptedRole === 'admin') {
+            $_SESSION['login_error'] = 'Email <strong>' . htmlspecialchars($profile['email']) . '</strong> belum terdaftar sebagai Admin. Silakan registrasi terlebih dahulu.';
+        } else {
+            $_SESSION['login_error'] = 'Email <strong>' . htmlspecialchars($profile['email']) . '</strong> belum didaftarkan oleh Administrator.';
+        }
+        header('Location: ' . APP_URL . '/index.php');
+        exit;
+    }
+
+    if ($user['role'] !== $attemptedRole) {
+        $_SESSION['login_error'] = 'Anda mencoba login sebagai ' . ucfirst($attemptedRole) . ' tetapi akun Anda adalah ' . ucfirst($user['role']) . '.';
         header('Location: ' . APP_URL . '/index.php');
         exit;
     }
@@ -80,8 +92,10 @@ try {
         $userModel->updateGoogleId($user['id'], (string)$profile['sub']);
     }
 
-    // ── STEP 4: Set session sementara (OTP belum diverifikasi) ─
+    // ── STEP 4: Set session ─
     setUserSession($user);
+
+    // Status OTP belum diverifikasi untuk semua role (admin & user)
     $_SESSION['pending_otp_user_id'] = $user['id'];
 
     // ── STEP 5: Generate & kirim OTP ke WhatsApp ─────────────

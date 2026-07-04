@@ -26,9 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['otp_verified'] = true;
         unset($_SESSION['pending_otp_user_id'], $_SESSION['otp_user_wa'], $_SESSION['otp_user_nama'], $_SESSION['_debug_otp']);
 
-        // Selalu arahkan ke biometric-verify; halaman itu yang menentukan
-        // apakah user perlu scan atau langsung lanjut ke dashboard
-        header('Location: ' . APP_URL . '/auth/biometric-verify.php');
+        // Arahkan ke dashboard (biometric digunakan saat CRUD admin)
+        header('Location: ' . APP_URL . '/dashboard.php');
         exit;
     } else {
         $error = 'Kode OTP salah atau sudah kadaluarsa. Coba lagi.';

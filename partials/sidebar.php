@@ -24,11 +24,23 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 
         <?php if ($currentRole === 'admin'): ?>
         <div class="nav-section">Administrator</div>
-        <a href="<?= APP_URL ?>/admin/users.php" class="nav-item <?= strpos($currentPage, 'users') !== false ? 'active' : '' ?>" id="nav-users">
-            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            <span>Pengelolaan User</span>
-            <span class="nav-badge">Admin</span>
-        </a>
+        <div class="nav-dropdown" style="cursor: pointer;">
+            <a class="nav-item <?= strpos($currentPage, 'users') !== false ? 'active' : '' ?>" onclick="let menu = document.getElementById('user-dropdown'); menu.style.display = menu.style.display === 'none' ? 'block' : 'none';">
+                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span>Pengelolaan User</span>
+                <svg viewBox="0 0 24 24" style="width:16px; height:16px; margin-left:auto; stroke:currentColor; stroke-width:2; fill:none;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </a>
+            <div id="user-dropdown" style="display: <?= strpos($currentPage, 'users') !== false ? 'block' : 'none' ?>; padding-left: 2rem; margin-top: 5px;">
+                <a href="<?= APP_URL ?>/admin/users.php?role=admin" class="nav-item <?= (isset($_GET['role']) && $_GET['role'] === 'admin') ? 'active' : '' ?>" style="min-height: 40px; margin-bottom: 5px; font-size: 0.9em;">
+                    <svg viewBox="0 0 24 24" style="width:16px; height:16px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <span>Admin</span>
+                </a>
+                <a href="<?= APP_URL ?>/admin/users.php?role=user" class="nav-item <?= (!isset($_GET['role']) || $_GET['role'] === 'user') && strpos($currentPage, 'users') !== false ? 'active' : '' ?>" style="min-height: 40px; font-size: 0.9em;">
+                    <svg viewBox="0 0 24 24" style="width:16px; height:16px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span>User Biasa</span>
+                </a>
+            </div>
+        </div>
         <a href="<?= APP_URL ?>/admin/audit.php" class="nav-item <?= strpos($currentPage, 'audit') !== false ? 'active' : '' ?>">
             <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
             <span>Log Audit</span>

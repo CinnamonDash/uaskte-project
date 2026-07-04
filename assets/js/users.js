@@ -47,34 +47,36 @@ function closeModal() {
 }
 
 function saveUser() {
-    const form = document.getElementById('user-form');
-    const btn  = document.getElementById('btn-save-user');
-    const fd   = new FormData(form);
+    confirmActionWithBiometric('Simpan Data User', () => {
+        const form = document.getElementById('user-form');
+        const btn  = document.getElementById('btn-save-user');
+        const fd   = new FormData(form);
 
-    btn.disabled = true;
-    btn.querySelector('span').textContent = 'Menyimpan...';
+        btn.disabled = true;
+        btn.querySelector('span').textContent = 'Menyimpan...';
 
-    fetch('users.php', {
-        method: 'POST',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        body: new URLSearchParams([...fd])
-    })
-    .then(r => r.json())
-    .then(res => {
-        btn.disabled = false;
-        btn.querySelector('span').textContent = 'Simpan';
-        if (res.success) {
-            showToast(res.message, 'success');
-            closeModal();
-            setTimeout(() => location.reload(), 800);
-        } else {
-            showToast(res.message, 'error');
-        }
-    })
-    .catch(() => {
-        btn.disabled = false;
-        btn.querySelector('span').textContent = 'Simpan';
-        showToast('Terjadi kesalahan jaringan', 'error');
+        fetch('users.php', {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            body: new URLSearchParams([...fd])
+        })
+        .then(r => r.json())
+        .then(res => {
+            btn.disabled = false;
+            btn.querySelector('span').textContent = 'Simpan';
+            if (res.success) {
+                showToast(res.message, 'success');
+                closeModal();
+                setTimeout(() => location.reload(), 800);
+            } else {
+                showToast(res.message, 'error');
+            }
+        })
+        .catch(() => {
+            btn.disabled = false;
+            btn.querySelector('span').textContent = 'Simpan';
+            showToast('Terjadi kesalahan jaringan', 'error');
+        });
     });
 }
 
@@ -86,24 +88,26 @@ function confirmDelete(userId, userName) {
 
 function deleteUser() {
     if (!deleteTargetId) return;
-    const btn = document.getElementById('btn-confirm-delete');
-    btn.disabled = true;
+    confirmActionWithBiometric('Hapus Data User', () => {
+        const btn = document.getElementById('btn-confirm-delete');
+        btn.disabled = true;
 
-    fetch('users.php', {
-        method: 'POST',
-        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `action=delete&id=${deleteTargetId}`
-    })
-    .then(r => r.json())
-    .then(res => {
-        btn.disabled = false;
-        document.getElementById('delete-modal').style.display = 'none';
-        if (res.success) {
-            showToast(res.message, 'success');
-            setTimeout(() => location.reload(), 800);
-        } else {
-            showToast(res.message, 'error');
-        }
+        fetch('users.php', {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `action=delete&id=${deleteTargetId}`
+        })
+        .then(r => r.json())
+        .then(res => {
+            btn.disabled = false;
+            document.getElementById('delete-modal').style.display = 'none';
+            if (res.success) {
+                showToast(res.message, 'success');
+                setTimeout(() => location.reload(), 800);
+            } else {
+                showToast(res.message, 'error');
+            }
+        });
     });
 }
 

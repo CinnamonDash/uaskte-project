@@ -1,59 +1,25 @@
-// biometric.js – WebAuthn biometric gate for admin pages
+// biometric.js – WebAuthn biometric for admin CRUD confirmation
 
-let biometricVerified = false;
-const BIOMETRIC_SESSION_KEY = 'biometric_verified_session';
-
-async function initBiometricGate() {
-    const gate = document.getElementById('biometric-gate');
-    const content = document.getElementById('user-management-content');
-
-    if (!gate || !content) return;
-
-    // Cek session storage (berlaku selama tab terbuka)
-    if (sessionStorage.getItem(BIOMETRIC_SESSION_KEY) === 'true') {
-        gate.style.display = 'none';
-        content.classList.remove('hidden');
-        return;
-    }
-
-    gate.style.display = 'flex';
-    content.classList.add('hidden');
-
+async function confirmActionWithBiometric(actionName, callback) {
     // Cek apakah WebAuthn tersedia
     if (!window.PublicKeyCredential) {
-        document.getElementById('biometric-status').innerHTML =
-            '<span class="text-warning">⚠️ Biometrik tidak tersedia di perangkat ini. Memuat dalam 3 detik...</span>';
-        setTimeout(() => {
-            gate.style.display = 'none';
-            content.classList.remove('hidden');
-            sessionStorage.setItem(BIOMETRIC_SESSION_KEY, 'true');
-        }, 3000);
+        alert('Biometrik tidak tersedia di perangkat ini. Melanjutkan aksi: ' + actionName);
+        callback();
         return;
     }
 
-    // Cek apakah platform authenticator tersedia
     try {
         const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
         if (!available) {
-            document.getElementById('biometric-status').innerHTML =
-                '<span class="text-warning">⚠️ Platform authenticator tidak tersedia. Silakan lanjutkan.</span>';
-            document.getElementById('btn-biometric-verify').textContent = 'Lanjutkan';
-            document.getElementById('btn-biometric-verify').onclick = skipBiometric;
+            alert('Platform authenticator tidak tersedia. Melanjutkan aksi: ' + actionName);
+            callback();
+            return;
         }
     } catch (e) {
         console.warn('WebAuthn check failed:', e);
     }
-}
-
-async function verifyBiometric() {
-    const statusEl = document.getElementById('biometric-status');
-    const btn = document.getElementById('btn-biometric-verify');
-
-    btn.disabled = true;
-    statusEl.innerHTML = '<span class="text-info">🔍 Memverifikasi biometrik...</span>';
 
     try {
-        // Buat challenge random
         const challenge = new Uint8Array(32);
         crypto.getRandomValues(challenge);
 
@@ -67,39 +33,19 @@ async function verifyBiometric() {
         });
 
         if (credential) {
-            statusEl.innerHTML = '<span class="text-success">✅ Verifikasi berhasil!</span>';
-            biometricVerified = true;
-            sessionStorage.setItem(BIOMETRIC_SESSION_KEY, 'true');
-
-            setTimeout(() => {
-                document.getElementById('biometric-gate').style.display = 'none';
-                document.getElementById('user-management-content').classList.remove('hidden');
-                // Animasi slide in
-                document.getElementById('user-management-content').style.animation = 'slideInUp 0.4s ease';
-            }, 800);
+            // Verifikasi berhasil
+            callback();
         }
     } catch (err) {
-        btn.disabled = false;
-
         if (err.name === 'NotAllowedError') {
-            statusEl.innerHTML = '<span class="text-error">❌ Verifikasi dibatalkan atau ditolak.</span>';
+            showToast('Verifikasi biometrik dibatalkan atau ditolak.', 'error');
         } else if (err.name === 'NotSupportedError' || err.name === 'SecurityError') {
             // Fallback jika tidak ada credential terdaftar
-            statusEl.innerHTML = '<span class="text-warning">⚠️ Belum ada biometrik terdaftar. Akses diberikan untuk demo.</span>';
-            setTimeout(skipBiometric, 2000);
+            alert('Belum ada biometrik terdaftar. Mengizinkan aksi (demo).');
+            callback();
         } else {
-            statusEl.innerHTML = `<span class="text-error">❌ Error: ${err.message}</span>`;
+            showToast(`Error biometrik: ${err.message}`, 'error');
         }
     }
 }
 
-function skipBiometric() {
-    sessionStorage.setItem(BIOMETRIC_SESSION_KEY, 'true');
-    document.getElementById('biometric-gate').style.display = 'none';
-    const content = document.getElementById('user-management-content');
-    content.classList.remove('hidden');
-    content.style.animation = 'slideInUp 0.4s ease';
-}
-
-// Inisialisasi saat halaman dimuat
-document.addEventListener('DOMContentLoaded', initBiometricGate);

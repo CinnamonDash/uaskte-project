@@ -41,10 +41,16 @@ class UserModel {
         $stmt->execute([$googleId, $userId]);
     }
 
-    // Ambil semua user
-    public function getAll(): array {
-        $stmt = $this->pdo->query("SELECT id, nama, email, no_wa, role, is_active, created_at, updated_at FROM users ORDER BY id DESC");
-        return $stmt->fetchAll();
+    // Ambil semua user (bisa difilter berdasarkan role)
+    public function getAll(?string $role = null): array {
+        if ($role) {
+            $stmt = $this->pdo->prepare("SELECT id, nama, email, no_wa, role, is_active, created_at, updated_at FROM users WHERE role = ? ORDER BY id DESC");
+            $stmt->execute([$role]);
+            return $stmt->fetchAll();
+        } else {
+            $stmt = $this->pdo->query("SELECT id, nama, email, no_wa, role, is_active, created_at, updated_at FROM users ORDER BY id DESC");
+            return $stmt->fetchAll();
+        }
     }
 
     // Buat user baru (oleh admin)
@@ -145,6 +151,14 @@ class UserModel {
         $stmt = $this->pdo->prepare("UPDATE users SET is_active = 0, updated_by = ? WHERE id = ?");
         $result = $stmt->execute([$deletedBy, $id]);
         $this->audit($id, 'DELETE', 'is_active', '1', '0', $deletedBy);
+        return $result;
+    }
+
+    // Aktifkan kembali user (undo soft delete)
+    public function reactivate(int $id, int $updatedBy): bool {
+        $stmt = $this->pdo->prepare("UPDATE users SET is_active = 1, updated_by = ? WHERE id = ?");
+        $result = $stmt->execute([$updatedBy, $id]);
+        $this->audit($id, 'UPDATE', 'is_active', '0', '1', $updatedBy);
         return $result;
     }
 

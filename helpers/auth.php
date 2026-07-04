@@ -12,19 +12,6 @@ function requireLogin(): void {
         header('Location: ' . APP_URL . '/index.php');
         exit;
     }
-    // Cek biometric: wajib hanya jika user punya credential terdaftar
-    if (empty($_SESSION['biometric_verified'])) {
-        global $pdo;
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM webauthn_credentials WHERE user_id = ?");
-        $stmt->execute([(int)$_SESSION['user_id']]);
-        $hasCreds = (int)$stmt->fetchColumn() > 0;
-        if ($hasCreds) {
-            header('Location: ' . APP_URL . '/auth/biometric-verify.php');
-            exit;
-        }
-        // Tidak punya credential biometric → lanjut, set verified agar tidak cek terus
-        $_SESSION['biometric_verified'] = true;
-    }
 }
 
 function requireAdmin(): void {
