@@ -177,7 +177,7 @@ svg{display:block;width:20px;height:20px;stroke:currentColor;fill:none;stroke-wi
 .topbar-user-info small{font-size:.7rem;color:var(--text-muted)}
 
 /* Main content */
-.main-content{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.main-content{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;min-width:0}
 .page-content{padding:1.75rem;flex:1}
 .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.75rem;flex-wrap:wrap;gap:1rem}
 .page-header h2{font-size:1.4rem;font-weight:800}
@@ -209,7 +209,7 @@ svg{display:block;width:20px;height:20px;stroke:currentColor;fill:none;stroke-wi
 .stat-label{font-size:.78rem;color:var(--text-muted);margin-top:.25rem}
 
 /* Table */
-.table-responsive{overflow-x:auto}
+.table-responsive{overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%}
 .data-table{width:100%;border-collapse:collapse;font-size:.85rem}
 .data-table thead th{
   padding:.75rem 1rem;text-align:left;

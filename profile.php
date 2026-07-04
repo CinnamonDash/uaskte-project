@@ -38,10 +38,7 @@ $pageTitle = 'Profil Saya';
       </div>
 
       <div class="form-group"><label>Nama</label><input class="form-control" value="<?= htmlspecialchars($user['nama']) ?>" disabled></div>
-      <div class="form-group"><label>Email <small>(terenkripsi SHA-512 di database)</small></label><input class="form-control" value="<?= htmlspecialchars($user['email']) ?>" disabled></div>
-      <div class="form-group"><label>Hash Email (SHA-512)</label>
-        <textarea class="form-control" rows="3" disabled style="font-family:monospace;font-size:.7rem;resize:none"><?= hash('sha512', strtolower(trim($user['email']))) ?></textarea>
-      </div>
+      <div class="form-group"><label>Email</label><input class="form-control" value="<?= htmlspecialchars($user['email']) ?>" disabled></div>
       <div class="form-group"><label>No WhatsApp</label><input class="form-control" value="<?= htmlspecialchars($user['no_wa']) ?>" disabled></div>
       <div class="form-row">
         <div class="form-group"><label>Bergabung</label><input class="form-control" value="<?= date('d F Y', strtotime($user['created_at'])) ?>" disabled></div>
