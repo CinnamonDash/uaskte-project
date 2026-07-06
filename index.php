@@ -135,6 +135,20 @@ $googleAuthUrlAdmin = 'https://accounts.google.com/o/oauth2/v2/auth?' . http_bui
     </main>
 
     <script>
+        // Efek dinamis pada background orbs (mouse parallax)
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 2; // -1 to 1
+            const y = (e.clientY / window.innerHeight - 0.5) * 2; // -1 to 1
+
+            const orb1 = document.querySelector('.orb-1');
+            const orb2 = document.querySelector('.orb-2');
+            const orb3 = document.querySelector('.orb-3');
+
+            if(orb1) orb1.style.transform = `translate(${x * 40}px, ${y * 40}px)`;
+            if(orb2) orb2.style.transform = `translate(${x * -50}px, ${y * -50}px)`;
+            if(orb3) orb3.style.transform = `translate(calc(-50% + ${x * 30}px), calc(-50% + ${y * 30}px))`;
+        });
+
         // Daftarkan Service Worker dengan path yang dinamis (mendukung subfolder /uaskte)
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('<?= APP_URL ?>/sw.js')

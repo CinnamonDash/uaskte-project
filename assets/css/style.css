@@ -43,7 +43,7 @@ svg{display:block;width:20px;height:20px;stroke:currentColor;fill:none;stroke-wi
 /* ── Auth Page ──────────────────────────────────────────────── */
 .auth-page{display:flex;align-items:center;justify-content:center;min-height:100vh;position:relative;overflow-y:auto;overflow-x:hidden;padding:1rem}
 .auth-bg{position:fixed;inset:0;z-index:0;overflow:hidden;}
-.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.35}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.35;transition:transform 0.1s ease-out}
 .orb-1{width:500px;height:500px;background:var(--primary);top:-150px;left:-150px}
 .orb-2{width:400px;height:400px;background:var(--secondary);bottom:-100px;right:-100px}
 .orb-3{width:300px;height:300px;background:var(--accent);top:50%;left:50%;transform:translate(-50%,-50%)}
